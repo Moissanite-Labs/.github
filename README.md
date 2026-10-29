@@ -5,7 +5,7 @@ The GitHub organization profile remains in `profile/README.md`.
 
 ## Develop
 
-The site is static HTML, CSS, JavaScript, and SVG in `docs/`. No package install or build is required.
+The site is static HTML, CSS, and image assets in `docs/`. No package install or build is required.
 
 ```sh
 python3 scripts/check_site.py
