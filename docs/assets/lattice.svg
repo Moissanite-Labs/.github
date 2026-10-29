@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="650" viewBox="0 0 640 650" fill="none">
+<title>Silicon and carbon: a shared structure</title>
+<desc>An original abstract crystal schematic, with warm orange carbon nodes and steel blue silicon nodes joined in an angular lattice. An illustration of collaboration, not a molecular model.</desc>
+<defs><radialGradient id="halo"><stop stop-color="#9fb4c4" stop-opacity=".06"/><stop offset="1" stop-color="#9fb4c4" stop-opacity="0"/></radialGradient><linearGradient id="face" x1="150" y1="120" x2="500" y2="530" gradientUnits="userSpaceOnUse"><stop stop-color="#9fb4c4" stop-opacity=".14"/><stop offset="1" stop-color="#9fb4c4" stop-opacity=".015"/></linearGradient></defs>
+<rect width="640" height="650" fill="#08090a"/>
+<circle cx="335" cy="320" r="300" fill="url(#halo)"/>
+<path d="M40 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M100 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M160 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M220 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M280 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M340 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M400 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M460 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M520 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M580 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M640 40V610" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 70H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 130H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 190H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 250H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 310H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 370H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 430H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 490H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 550H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="M40 610H620" stroke="#9fb4c4" stroke-opacity=".055"/>
+<path d="m334 76 154 89v178l-154 89-154-89V165Z" fill="url(#face)" stroke="#9fb4c4" stroke-opacity=".22"/>
+<path d="m334 254 154-89v178l-154 89Z" fill="#9fb4c4" fill-opacity=".035"/>
+<path d="m257 210 154 89v178l-154 89-154-89V299Z" fill="#ff5b14" fill-opacity=".025" stroke="#ff5b14" stroke-opacity=".18"/>
+<path d="M334 76 488 165" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M488 165 488 343" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M488 343 334 432" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M334 432 180 343" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M180 343 180 165" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M180 165 334 76" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M334 76 334 254" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M488 343 334 254" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M180 343 334 254" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M180 165 257 210" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M488 165 411 299" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M334 432 257 388" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M257 210 411 299" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M411 299 411 477" stroke="#ff5b14" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M411 477 257 566" stroke="#ff5b14" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M257 566 103 477" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M103 477 103 299" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M103 299 257 210" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M257 210 257 388" stroke="#ff5b14" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M257 388 411 477" stroke="#ff5b14" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M257 388 103 299" stroke="#9fb4c4" stroke-opacity=".7" stroke-width="1.5"/>
+<path d="M334 76 411 121" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M488 165 565 210" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M411 121 565 210" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M565 210 565 388" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M565 388 411 477" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M488 343 565 388" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M180 165 103 121" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M103 121 103 299" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M103 477 334 521" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M334 521 488 521" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M488 521 565 388" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M411 477 334 521" stroke="#9fb4c4" stroke-opacity=".24" stroke-width="1"/>
+<path d="M334 68 340.96 72.0V80.0L334 84 327.04 80.0V72.0Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="334" cy="76" r="2.2" fill="#9fb4c4"/>
+<path d="M488 157 494.96 161.0V169.0L488 173 481.04 169.0V161.0Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="488" cy="165" r="2.2" fill="#ff5b14"/>
+<path d="M488 338 492.35 340.5V345.5L488 348 483.65 345.5V340.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="488" cy="343" r="1.4" fill="#9fb4c4"/>
+<path d="M334 424 340.96 428.0V436.0L334 440 327.04 436.0V428.0Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="334" cy="432" r="2.2" fill="#ff5b14"/>
+<path d="M180 338 184.35 340.5V345.5L180 348 175.65 345.5V340.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="180" cy="343" r="1.4" fill="#9fb4c4"/>
+<path d="M180 157 186.96 161.0V169.0L180 173 173.04 169.0V161.0Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="180" cy="165" r="2.2" fill="#ff5b14"/>
+<path d="M257 205 261.35 207.5V212.5L257 215 252.65 212.5V207.5Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="257" cy="210" r="1.4" fill="#ff5b14"/>
+<path d="M411 294 415.35 296.5V301.5L411 304 406.65 301.5V296.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="411" cy="299" r="1.4" fill="#9fb4c4"/>
+<path d="M257 380 263.96 384.0V392.0L257 396 250.04 392.0V384.0Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="257" cy="388" r="2.2" fill="#9fb4c4"/>
+<path d="M103 294 107.35 296.5V301.5L103 304 98.65 301.5V296.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="103" cy="299" r="1.4" fill="#9fb4c4"/>
+<path d="M411 116 415.35 118.5V123.5L411 126 406.65 123.5V118.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="411" cy="121" r="1.4" fill="#9fb4c4"/>
+<path d="M565 205 569.35 207.5V212.5L565 215 560.65 212.5V207.5Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="565" cy="210" r="1.4" fill="#ff5b14"/>
+<path d="M565 383 569.35 385.5V390.5L565 393 560.65 390.5V385.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="565" cy="388" r="1.4" fill="#9fb4c4"/>
+<path d="M411 469 417.96 473.0V481.0L411 485 404.04 481.0V473.0Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="411" cy="477" r="2.2" fill="#ff5b14"/>
+<path d="M257 561 261.35 563.5V568.5L257 571 252.65 568.5V563.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="257" cy="566" r="1.4" fill="#9fb4c4"/>
+<path d="M103 472 107.35 474.5V479.5L103 482 98.65 479.5V474.5Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="103" cy="477" r="1.4" fill="#ff5b14"/>
+<path d="M103 116 107.35 118.5V123.5L103 126 98.65 123.5V118.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="103" cy="121" r="1.4" fill="#9fb4c4"/>
+<path d="M334 246 340.96 250.0V258.0L334 262 327.04 258.0V250.0Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="334" cy="254" r="2.2" fill="#9fb4c4"/>
+<path d="M334 516 338.35 518.5V523.5L334 526 329.65 523.5V518.5Z" fill="#08090a" stroke="#ff5b14" stroke-width="1.5"/>
+<circle cx="334" cy="521" r="1.4" fill="#ff5b14"/>
+<path d="M488 516 492.35 518.5V523.5L488 526 483.65 523.5V518.5Z" fill="#08090a" stroke="#9fb4c4" stroke-width="1.5"/>
+<circle cx="488" cy="521" r="1.4" fill="#9fb4c4"/>
+<g stroke="#9fb4c4" stroke-opacity=".35"><path d="M334 76V47H425M257 566v32H170M488 343h93v-54"/><path d="M42 52h12m-6-6v12M597 568h12m-6-6v12"/></g>
+<g font-family="ui-monospace, SFMono-Regular, monospace" font-size="10" letter-spacing="1.3"><text x="434" y="51" fill="#9fb4c4">Si / SILICON</text><text x="74" y="602" fill="#ff5b14">C / CARBON</text><text x="591" y="276" fill="#737b80" transform="rotate(-90 591 276)">BOND / 001</text></g>
+<path d="M43 580h55M43 585v-10M98 585v-10" stroke="#9fb4c4" stroke-opacity=".3"/>
+</svg>
