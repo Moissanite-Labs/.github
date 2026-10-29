@@ -12,7 +12,7 @@ Our name is a metaphor for that mission. Moissanite is silicon carbide: silicon 
 - [**Exo CLI**](https://github.com/Moissanite-Labs/exo-cli) and [**Exo Desktop**](https://github.com/Moissanite-Labs/exo-desktop) explore command-line and desktop experiences. Repository migration and boundaries remain in progress.
 - [**Exofab**](https://github.com/Moissanite-Labs/exofab) is the home for a planned collaboration hub where people and agents can develop projects and bring products and companies into the world. Robotics is a longer-term aspiration.
 - [**Ethos**](https://github.com/Moissanite-Labs/ethos) is the home for a planned portable protocol for user preferences and tendencies across agent harnesses and other inference surfaces. A user-controlled, opt-in catalogue is a future possibility.
-- [**Constitution**](https://github.com/Moissanite-Labs/constitution) is intended to hold the lab's principles and operating practices, including the **Siliconcordat**, our manifesto for cooperation between digital and biological intelligence. The vision documents are being prepared for review.
+- [**Constitution**](https://github.com/Moissanite-Labs/constitution) is intended to hold the lab's principles and operating practices, including the **Siliconcordat**, our manifesto for cooperation between digital and biological intelligence. The [founder vision and manifesto proposals](https://github.com/Moissanite-Labs/constitution/pull/1) are open for review.
 
 We are also exploring an agent-first development forge and a collaboration protocol that can connect contributions and project lifecycles across tools. Their names, scope, and implementation remain open.
 
