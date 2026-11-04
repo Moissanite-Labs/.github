@@ -24,6 +24,27 @@ To roll back, revert the website change through a reviewed pull request. The nex
 
 The site follows Exo's warm black, orange, and steel-blue palette, with an original Moissanite Labs crystal motif. Its diagrams illustrate the collaboration metaphor; they are not scientific crystal models.
 
-The source of the mission and ecosystem is the [constitution repository](https://github.com/Moissanite-Labs/constitution), especially `FOUNDER-VISION.md` and `SILICONCORDAT.md`. These documents are working proposals. Preserve that distinction and the project maturity labels when updating the site.
+The source of the mission and ecosystem is the [Compass repository](https://github.com/Moissanite-Labs/compass), especially `FOUNDER-VISION.md` and `SILICONCORDAT.md`. These documents are working proposals. Preserve that distinction and the project maturity labels when updating the site.
 
 The protected Exo site and pitch deck are references, not assets to republish. Do not add access tokens or confidential material to this repository.
+
+
+### November 2026 ecosystem refresh
+
+The site and organization profile distinguish early implementation (Exo), protocol work
+(Ethos), design proposals (Exofab), a working local reference (Synbios), and an
+experimental reference (Synmerit). The map and journey express intended relationships,
+not a shipped integrated platform. Keep these limitations next to capability claims.
+
+Public editorial references checked on 4 November 2026:
+
+- [Ahraz's Work page](https://ahraz-staging.vercel.app/work), the broader ecosystem narrative.
+- [Compass ecosystem snapshot](https://github.com/Moissanite-Labs/compass/blob/main/ecosystem-map/2026-11-03-map.md), the component roles and maturity evidence.
+- [Compass roadmap](https://github.com/Moissanite-Labs/compass/blob/main/SILICONCORDAT.md), the intended first end-to-end slice.
+
+The Work page is an editorial reference, not an asset dependency. No private material,
+protected website assets, or third-party scripts are embedded. ASKA Digital,
+Foundation-0, and Proven Commons appear as connected efforts, not M Labs products.
+
+A merge to `main` publishes the site automatically. Keep the refresh in a PR until
+production publication is explicitly authorized.
