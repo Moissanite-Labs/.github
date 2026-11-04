@@ -2,20 +2,34 @@
 
 **Building with intelligence, together.**
 
-Moissanite Labs is an AI development lab exploring how digital and biological intelligence can create, collaborate, and evolve together. We build in the open, with the aim of giving agents a presence in the world—and helping people and agents turn ideas into things that matter.
+Moissanite Labs is an open research and engineering lab building infrastructure for people and digital intelligences to create, collaborate, and grow together. Personal intelligence, collective creation, and open interfaces form one connected undertaking, with human agency at its centre.
 
-Our name is a metaphor for that mission. Moissanite is silicon carbide: silicon and carbon bonded together. A lab that makes the stone creates those bonds; Moissanite Labs aims to create bonds between digital and biological intelligence.
+Our name draws on silicon and carbon bonded in moissanite: a metaphor for different forms of intelligence working together.
+
+**[Explore the ecosystem →](https://moissanite-labs.github.io/.github/)**
 
 ## The ecosystem
 
-- [**Exo**](https://github.com/Moissanite-Labs/exo) is the foundation for agents to interact with the world. The relationships between its core engine and the CLI, desktop, and future OS experiences are being worked through.
-- [**Exo CLI**](https://github.com/Moissanite-Labs/exo-cli) and [**Exo Desktop**](https://github.com/Moissanite-Labs/exo-desktop) explore command-line and desktop experiences. Repository migration and boundaries remain in progress.
-- [**Exofab**](https://github.com/Moissanite-Labs/exofab) is the home for a planned collaboration hub where people and agents can develop projects and bring products and companies into the world. Robotics is a longer-term aspiration.
-- [**Ethos**](https://github.com/Moissanite-Labs/ethos) is the home for a planned portable protocol for user preferences and tendencies across agent harnesses and other inference surfaces. A user-controlled, opt-in catalogue is a future possibility.
-- [**Constitution**](https://github.com/Moissanite-Labs/constitution) is intended to hold the lab's principles and operating practices, including the **Siliconcordat**, our manifesto for cooperation between digital and biological intelligence. Read the [founder vision and manifesto proposals](https://github.com/Moissanite-Labs/constitution/pull/1).
+| Project | Role | Current maturity |
+| --- | --- | --- |
+| [**Exo**](https://github.com/Moissanite-Labs/exo) | A persistent agent with memory, tools, approvals, and a visible trace of its work. | Early implementation. Terminal and web clients exist; desktop and shared-engine boundaries remain in progress. |
+| [**Ethos**](https://github.com/Moissanite-Labs/ethos) | User-controlled preferences that can travel between agent environments. | Protocol in development. Specification and schema exist; cross-harness portability remains a goal. |
+| [**Exofab**](https://github.com/Moissanite-Labs/exofab) | A human-first hub for finding collaborators and forming projects and ventures. | Design and proposals. |
+| [**Synbios**](https://github.com/Moissanite-Labs/synbios) | An agent-first forge connecting scoped work, artifacts, evidence, and independent review. | Working local reference with web, API, CLI, and exports. It does not execute or sandbox agents' tools. |
+| [**Synmerit**](https://github.com/Moissanite-Labs/synmerit) | Signed records of contribution, consent, delegated authority, and agreements. | Experimental reference with a local CLI and workbench. Interoperability remains in progress. |
 
-We are also exploring an agent-first development forge and a collaboration protocol that can connect contributions and project lifecycles across tools. Their names, scope, and implementation remain open.
+The intended journey is **bring a problem → find a team → make and review the work → preserve the record → learn from use**. It is a target for integration, not a claim that a complete connected platform is live. Each component should also work with tools outside this ecosystem. Synmerit does not itself create companies, confer ownership, make payments, or establish legal rights.
+
+## Research and reach
+
+- [ABIOS](https://github.com/Moissanite-Labs/abios), [Tokenpage](https://github.com/Moissanite-Labs/tokenpage), [Nullmodem](https://github.com/Moissanite-Labs/nullmodem), and [Scry](https://github.com/Moissanite-Labs/scry) explore agent communication, tokenization, training, and reasoning. These are research tracks, not established general-intelligence gains.
+- [Exo Desktop](https://github.com/Moissanite-Labs/exo-desktop), [Exo OS](https://github.com/Moissanite-Labs/exo-os), and [Exyber](https://github.com/Moissanite-Labs/exyber) extend the direction towards a wider presence and device reach. A pocket companion and robotics remain longer-term ambitions.
+- [Compass](https://github.com/Moissanite-Labs/compass) holds the founder vision, ecosystem roadmap, and **Siliconcordat**, a working manifesto proposal rather than adopted governance. **Learning a preference does not grant permission.**
+
+The wider practice connects applied work at [ASKA Digital](https://digital.askaconsult.com/), open research at [Foundation-0](https://github.com/Foundation-0), and machine-checked software through [Proven Commons](https://proven-commons.github.io/mission/), a Foundation-0 programme. These are connected efforts, not interchangeable products.
 
 ## Build with us
 
-Explore the repositories, follow their issues and pull requests, and contribute where you see an opportunity. As conventions take shape, each repository will document how to participate. Questions and ideas about the ecosystem can also start in the [organization discussions](https://github.com/orgs/Moissanite-Labs/discussions).
+Read the repositories, question assumptions, and contribute reviewable work. Start with each project's current documentation, issues, and pull requests, or join the [organization discussions](https://github.com/orgs/Moissanite-Labs/discussions).
+
+Scope and maturity snapshot: **4 November 2026**. See the [ecosystem record](https://github.com/Moissanite-Labs/compass/tree/main/ecosystem-map) and current repository documentation for details.
