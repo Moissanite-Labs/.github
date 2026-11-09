@@ -3,18 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0;url=https://siliconcordat.com/ml/" />
     <script>
       (function () {
+        if (location.hostname !== "moissanite-labs.github.io") return;
         var p = location.pathname,
           prefix = "/.github",
-          i = p.indexOf(prefix);
-        var rest = i !== -1 ? p.slice(i + prefix.length) : "";
-        if (!rest) rest = "/";
-        else if (rest.charAt(0) !== "/") rest = "/" + rest;
-        location.replace(
-          "https://siliconcordat.com" + rest + location.search + location.hash
-        );
+          rest;
+        if (p === prefix || p === prefix + "/") {
+          rest = "/";
+        } else if (p.indexOf(prefix + "/") === 0) {
+          rest = p.slice(prefix.length);
+        } else {
+          return;
+        }
+        var url =
+          "https://siliconcordat.com" + rest + location.search + location.hash;
+        var meta = document.createElement("meta");
+        meta.httpEquiv = "refresh";
+        meta.content = "0;url=" + url;
+        document.head.appendChild(meta);
+        location.replace(url);
       })();
     </script>
     <meta name="theme-color" content="#08090a" />
