@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="640" height="650" viewBox="0 0 640 650" fill="none">
 <title>Silicon and carbon: a shared structure</title>
-<desc>An original abstract crystal schematic, with warm orange carbon nodes and steel blue silicon nodes joined in an angular lattice. An illustration of collaboration, not a molecular model.</desc>
+<desc>An original abstract crystal schematic, with warm champagne carbon nodes and steel blue silicon nodes joined in an angular lattice. An illustration of collaboration, not a molecular model.</desc>
 <defs><radialGradient id="halo"><stop stop-color="#9fb4c4" stop-opacity=".06"/><stop offset="1" stop-color="#9fb4c4" stop-opacity="0"/></radialGradient><linearGradient id="face" x1="150" y1="120" x2="500" y2="530" gradientUnits="userSpaceOnUse"><stop stop-color="#9fb4c4" stop-opacity=".14"/><stop offset="1" stop-color="#9fb4c4" stop-opacity=".015"/></linearGradient></defs>
 <rect width="640" height="650" fill="#08090a"/>
 <circle cx="335" cy="320" r="300" fill="url(#halo)"/>
