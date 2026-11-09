@@ -25,7 +25,7 @@ The intended journey is **bring a problem → find a team → make and review th
 
 - [ABIOS](https://github.com/Moissanite-Labs/abios), [Tokenpage](https://github.com/Moissanite-Labs/tokenpage), [Nullmodem](https://github.com/Moissanite-Labs/nullmodem), and [Scry](https://github.com/Moissanite-Labs/scry) explore agent communication, tokenization, training, and reasoning. These are research tracks, not established general-intelligence gains.
 - [Exo Desktop](https://github.com/Moissanite-Labs/exo-desktop), [Exo OS](https://github.com/Moissanite-Labs/exo-os), and [Exyber](https://github.com/Moissanite-Labs/exyber) extend the direction towards a wider presence and device reach. A pocket companion and robotics remain longer-term ambitions.
-- **Siliconcordat** — the lab’s working manifesto proposal — is published on the [lab website](https://moissanite-labs.github.io/.github/#principles), not adopted governance. **Learning a preference does not grant permission.**
+- [**Siliconcordat**](https://github.com/Moissanite-Labs/siliconcordat) — the lab’s working manifesto proposal — is published on the [lab website](https://moissanite-labs.github.io/.github/#principles), not adopted governance. **Learning a preference does not grant permission.**
 
 The wider practice connects applied work at [ASKA Digital](https://digital.askaconsult.com/), open research at [Foundation-0](https://github.com/Foundation-0), and machine-checked software through [Proven Commons](https://proven-commons.github.io/mission/), a Foundation-0 programme. These are connected efforts, not interchangeable products.
 
