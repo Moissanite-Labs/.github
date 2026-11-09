@@ -3,13 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="0;url=https://siliconcordat.com/" />
+    <script>
+      (function () {
+        var p = location.pathname,
+          prefix = "/.github",
+          i = p.indexOf(prefix);
+        var rest = i !== -1 ? p.slice(i + prefix.length) : "";
+        if (!rest) rest = "/";
+        else if (rest.charAt(0) !== "/") rest = "/" + rest;
+        location.replace(
+          "https://siliconcordat.com" + rest + location.search + location.hash
+        );
+      })();
+    </script>
     <meta name="theme-color" content="#08090a" />
     <title>Moissanite Labs | Infrastructure for human–AI symbiosis</title>
     <meta
       name="description"
       content="Moissanite Labs builds open tools for people and AI to work together. Explore Exo, Ethos, Exofab, Synbios, Synmerit, Weft, and the research connecting them."
     />
-    <link rel="canonical" href="https://moissanite-labs.github.io/.github/" />
+    <link rel="canonical" href="https://siliconcordat.com/" />
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
@@ -21,11 +35,11 @@
     />
     <meta
       property="og:url"
-      content="https://moissanite-labs.github.io/.github/"
+      content="https://siliconcordat.com/"
     />
     <meta
       property="og:image"
-      content="https://moissanite-labs.github.io/.github/assets/social.png"
+      content="https://siliconcordat.com/assets/social.png"
     />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />

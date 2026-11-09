@@ -3,13 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="0;url=https://siliconcordat.com/ml/" />
+    <script>
+      (function () {
+        var p = location.pathname,
+          prefix = "/.github",
+          i = p.indexOf(prefix);
+        var rest = i !== -1 ? p.slice(i + prefix.length) : "";
+        if (!rest) rest = "/";
+        else if (rest.charAt(0) !== "/") rest = "/" + rest;
+        location.replace(
+          "https://siliconcordat.com" + rest + location.search + location.hash
+        );
+      })();
+    </script>
     <meta name="theme-color" content="#08090a" />
     <title>Moissanite Labs | Ecosystem index</title>
     <meta
       name="description"
       content="Moissanite Labs ecosystem map: Exo, Ethos, Exofab, Synbios, Synmerit, Weft, and connected research—with honest maturity labels."
     />
-    <link rel="canonical" href="https://moissanite-labs.github.io/.github/ml/" />
+    <link rel="canonical" href="https://siliconcordat.com/ml/" />
     <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../styles.css" />
   </head>
