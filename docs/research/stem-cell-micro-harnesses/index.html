@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08090a">
+<title>Stem-Cell Micro-Harnesses: Report 1 | Moissanite Labs</title>
+<meta name="description" content="Report 1 of the razi-cells program: small agent harnesses that start from a need and an empty folder, and improve by selection.">
+<link rel="canonical" href="https://moissanite-labs.github.io/.github/research/stem-cell-micro-harnesses/">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../research/research.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><a class="brand" href="../../" aria-label="Moissanite Labs home"><img src="../../assets/favicon.svg" width="35" height="35" alt=""><span>MOISSANITE<span>LABS</span></span></a>
+<nav aria-label="Main navigation"><a href="../../research/" aria-current="page">Research</a><a href="../../ml/">Ecosystem</a><a href="../../">Lab</a><a href="https://github.com/Moissanite-Labs">GitHub <span aria-hidden="true">&nearr;</span></a></nav></header>
+<main class="paper" id="main">
+<p class="eyebrow"><i></i> Research / report</p>
+
+<h1>Stem-Cell Micro-Harnesses: Model Choice, Selection Machinery and Code Diversity in Self-Improving LLM Agents</h1>
+<div class="meta">Report 1, version 2 &middot; razi-cells program &middot; Moissanite Labs &middot; data collected 2026-11-08 to 2026-11-09 &middot; hypotheses in section 9 registered 2026-11-09, before any of their tests were run &middot; one Apple M1 Max (8P+2E cores, 64 GB)</div>
+
+<div class="note"><b>Notes added for publication, 2026-11-10</b>
+This is Report 1 as written on 2026-11-09, with private paths, names and internal ids removed. It is an exploratory report. Three things are known since.
+<ol>
+<li>A scoring fault was found afterwards. The score reader took the last number from standard output and standard error together, so a runtime warning line was once read as a score. Taking out the one false improvement moves run b5 from 12.82 to 11.97 kept improvements per 100 calls, and the correlation in finding (3) from 0.99 to 0.986. The Fable against Argon comparison stays undetectable under every correction (Welch t between 0.29 and 0.70).</li>
+<li>Section 5 says the embedding permutation tests shuffle whole runs. The code shuffles single variants, as section 6.6 describes. Read those p values as upper bounds on the evidence, because variants from one run are not independent.</li>
+<li>The registered tests that followed are kept in their own records: <a href="https://github.com/Moissanite-Labs/weft/pull/101">E07</a> and <a href="https://github.com/Moissanite-Labs/weft/pull/107">the laws record, E11 to L1</a>. Both are under review. Several guesses there missed, and the records say so.</li>
+</ol></div>
+<div class="abstract"><b>Abstract.</b>
+We built "stem cells": small agent harnesses that each start from a written NEED and an empty folder.
+Each cell grows its own code and tools inside a macOS sandbox. It makes every model call through
+Exo's router, so no API key ever enters a cell. A cell improves its code by selection against a
+fitness assay that the harness has validated. We ran 13 colonies of 8 to 16 cells on 8 fixed coding
+tasks, about 1,560 model calls in total, under five model conditions: a fast default (DeepSeek v4.1 Flash),
+Claude Fable 5.1, GPT-6 Astra, Tencent hy4 and Gemini 4 Argon.
+Four results stand out. (1) Harness design moved outcomes as much as model choice did.
+(2) Frontier models reached 10 to 13 kept improvements per 100 calls, against 1.6 to 3.1 for the fast
+default. Fable (n=3) and Argon (n=2) could not be told apart (Welch t = 0.48). (3) How often a model
+used the selection tool predicted its improvement rate almost perfectly across 8 runs (r = 0.99).
+hy4 shows this most clearly: it never used the tool and scored 0, while hand-tuning a 14.3x compressor.
+Only Astra ever used the daughter-cell mitosis action. (4) Code embeddings showed that models differ
+in run-to-run code diversity. A same-model control did <i>not</i> support a stable per-model fingerprint.
+This version adds the full method and its variables, an analysis plan, 18 registered hypotheses
+with falsification criteria, and the experiment roadmap.</div>
+
+<div class="toc"><b>Contents</b><ol>
+<li><a href="#intro">Introduction and research questions</a></li>
+<li><a href="#system">The system</a></li>
+<li><a href="#method">Scientific method</a></li>
+<li><a href="#vars">Variables</a></li>
+<li><a href="#analysis">Analysis plan and decision rules</a></li>
+<li><a href="#results">Results to date</a></li>
+<li><a href="#disc">Discussion</a></li>
+<li><a href="#threats">Threats to validity</a></li>
+<li><a href="#hyp">Hypothesis register</a></li>
+<li><a href="#road">Areas of exploration and experiment roadmap</a></li>
+<li><a href="#safety">Safety, ethics and governance</a></li>
+<li><a href="#harness">Harness findings</a></li>
+<li><a href="#repro">Reproducibility, data dictionary and timeline</a></li>
+<li><a href="#gloss">Glossary</a></li>
+<li><a href="#appx">Appendices: system prompt, tool spec, tasks</a></li>
+</ol></div>
+
+<h2 id="intro">1. Introduction and research questions</h2>
+<p>Agent harnesses usually come pre-built: a fixed toolset, a fixed loop and a model behind it. We asked
+the opposite question. What happens when a harness starts from nothing, builds only the tooling its task
+demands, and improves through a biological loop: vary, compete, keep the winner, record the lesson?
+The program is open-ended by design. The project lead handed full agency over its direction to the
+investigating agent, and asked for constant iteration, the way the cells themselves are meant to work.</p>
+<div class="tablewrap"><table>
+<tr><th>RQ</th><th>Question</th><th>Status</th></tr>
+<tr><td>RQ1</td><td>Feasibility: can a minimal sandboxed cell turn a one-paragraph NEED into verified, measurably optimized code with no human help?</td><td class="sup">Answered: yes</td></tr>
+<tr><td>RQ2</td><td>Drivers: what controls the rate of kept improvements: harness design, colony scale, model, or how the model uses the harness?</td><td class="mix">Partly answered</td></tr>
+<tr><td>RQ3</td><td>Model economics: where do models sit on the frontier of improvement rate, speed and cost? Do mixtures beat pure colonies?</td><td class="open">Open (cost not yet logged)</td></tr>
+<tr><td>RQ4</td><td>Selection design: how should mitosis work so that each split builds on the last (loser-informed, novelty floor, split width)?</td><td class="open">Open</td></tr>
+<tr><td>RQ5</td><td>Representation: does embedding space give useful structure (prediction, steering, causality)?</td><td class="mix">First results</td></tr>
+<tr><td>RQ6</td><td>Agency: what happens when cells can build shared tools, or change the mitosis process itself?</td><td class="open">Open</td></tr>
+<tr><td>RQ7</td><td>Formal grounding: can selection be made provably honest (Lean theorems as needs, proven selection rule)?</td><td class="open">Open (toolchain installed)</td></tr>
+<tr><td>RQ8</td><td>Substrate and scale: what emerges with many colonies, and can Apple Silicon (P/E cores, unified memory, GPU/ANE) improve measurement or selection?</td><td class="open">Open</td></tr>
+</table></div>
+
+<h2 id="system">2. The system</h2>
+<h3>2.1 The cell</h3>
+<p>A cell is a folder. It holds a read-only <code>NEED</code>, a self-written <code>genome.md</code>
+(memory, capped at 4,000 chars), any files it creates, and an append-only <code>log.jsonl</code>.
+On each step the cell's brain (one model call through Exo's <code>Router</code>, with a per-cell
+<code>session_id</code>) chooses exactly one action. Implementation: <code>code/cell.py</code> in the record
+(486 lines, stdlib plus Exo's router). The action set is in Appendix B.</p>
+<h3>2.2 Sandbox and safety</h3>
+<p>Every shell action runs under <code>sandbox-exec</code>: no network, no writes outside the cell, no reads
+of <code>$HOME</code>, 30 s limit. Each rule was verified on its own (outside write denied, curl exit 6,
+<code>~/.zshrc</code> read denied). Model access goes only through the router in the parent process,
+so cells never see credentials.</p>
+<h3>2.3 Selection machinery</h3>
+<ul>
+<li><b>Assay validation.</b> The harness runs the cell's fitness command 5 times on the current body. It is accepted only if it exits 0, prints a number above 0, and has spread (max&minus;min)/median of 15% or less.</li>
+<li><b>Win rule.</b> A challenger wins only if median(challenger) beats median(incumbent) by more than max(3%, measured noise), and the challenger's worst run is no worse than the incumbent's median. Ties keep the incumbent.</li>
+<li><b>Bench lock.</b> One measurement at a time, machine-wide, so timing assays do not disturb each other.</li>
+<li><b><code>variants</code></b>: the model writes 2 to 6 full versions of one file in one reply, and the CPU picks. This is cheap mutation with strict selection.</li>
+<li><b><code>try</code></b> (asymmetric mitosis): one daughter cell explores one idea for half the parent's remaining steps (depth 1). The parent stays the control. If the daughter loses, an "autopsy" model call writes a one-line lesson into LIBRARY. This is the first form of loser-informed mitosis.</li>
+<li><b>Germline.</b> Every win and every loss lesson is appended to a colony-wide <code>LIBRARY.md</code> (max 400 chars per line, never code), which all cells read.</li>
+<li><b>Apoptosis.</b> Three failed steps in a row end the cell. Rate limits and timeouts back off instead (at most 6 waits, added after b6).</li>
+</ul>
+<h3>2.4 Colony runner</h3>
+<p><code>colony.py</code> runs N cells as separate processes. It samples RSS and CPU of every process tree every 2 s and writes
+<code>summary.json</code>. Each cell can be pinned to one model. A pinned cell has no hidden fallback, and the
+route of every call is logged.</p>
+<h3>2.5 Version history</h3>
+<div class="tablewrap"><table>
+<tr><th>Version</th><th>Runs</th><th>Key change</th><th>Reason</th></tr>
+<tr><td>v1</td><td>c1, c2, g1</td><td>Text JSON actions; symmetric divide into A/B daughters</td><td>Minimum viable cell</td></tr>
+<tr><td>v2</td><td>g2</td><td>Plain vs split twins; depth cap 2</td><td>Test whether splitting helps</td></tr>
+<tr><td>v3</td><td>g3</td><td>Native tool calls (DSML/JSON fallbacks), validated assay, <code>variants</code>, asymmetric <code>try</code>, LIBRARY, apoptosis</td><td>g2 lost 46 replies, decided a 0 vs 0 split, and wasted calls on twins</td></tr>
+<tr><td>v3 + nudges</td><td>g4</td><td>Prompts to register the assay early</td><td>g3 cells registered it at step 4 to 14 of 16</td></tr>
+<tr><td>v3b/c</td><td>b5, b6</td><td>Model pinning; TEXT_MODE for gpt-6</td><td>gpt-6 rejects function tools combined with reasoning on chat/completions</td></tr>
+<tr><td>v3c+</td><td>b7 onward</td><td>Rate-limit backoff</td><td>b6 lost 5 of 8 cells to HTTP 429</td></tr>
+<tr><td>v3d</td><td>b8 onward</td><td>Full code archive in <code>variants.jsonl</code></td><td>Needed for embeddings</td></tr>
+</table></div>
+
+<h2 id="method">3. Scientific method</h2>
+<h3>3.1 Design</h3>
+<p>The program runs in two phases, and every result is labelled with the phase it came from.</p>
+<ul>
+<li><b>Exploratory phase (done: c1 to b11).</b> Iterative engineering and observation. The harness changed
+between runs on purpose. Results here generate hypotheses. They do not confirm them.</li>
+<li><b>Confirmatory phase (from now).</b> The harness is frozen at a tagged version for each experiment. Hypotheses,
+predictions and decision rules are written down first (section 9). Each condition gets at least 3
+replicate runs, and conditions are interleaved in time to spread out provider and machine drift.</li>
+</ul>
+<h3>3.2 Units of analysis</h3>
+<div class="tablewrap"><table>
+<tr><th>Unit</th><th>What it is</th><th>Independence</th></tr>
+<tr><td>Step</td><td>One model call and one action</td><td>Not independent (same cell history)</td></tr>
+<tr><td>Variant</td><td>One code version written</td><td>Not independent (shares lineage within a run)</td></tr>
+<tr><td>Cell</td><td>One NEED pursued to done, death or cap</td><td>Weakly dependent (shared LIBRARY, shared bench)</td></tr>
+<tr><td><b>Run (colony)</b></td><td>8 cells, one condition</td><td><b>The primary independent unit.</b> All model comparisons use run-level statistics</td></tr>
+</table></div>
+<h3>3.3 Procedure for one run</h3>
+<ol>
+<li>Freeze code. Record the cell.py and colony.py versions and the exo-live commit (currently <code>6054da56</code>).</li>
+<li>Remove the bench lock and clear the run folder.</li>
+<li>Launch <code>colony.py RUN needs8v3.json --par 8 --calls 40 --steps 16 [--model REF]</code> as a harness background job.</li>
+<li>Do not touch the run. No polling, no restarts, no edits.</li>
+<li>On exit, read <code>summary.json</code> and check from <code>routes</code> that every call was served by the intended model.</li>
+<li>Extract metrics (section 4.2). Embed variants (b8 onward) with all three embedders.</li>
+<li>Append a dated entry to <code>TESTS.md</code> before interpreting anything.</li>
+</ol>
+<h3>3.4 Instrument validity checks</h3>
+<ul>
+<li>The sandbox was verified with negative tests (2.2).</li>
+<li>Assay acceptance rejects unstable or wrong-output measurements before any comparison.</li>
+<li>The win rule requires clearing measured noise. We have observed fake-win protection: in g2 a 0 vs 0 split was decided, which v3 now blocks.</li>
+<li>Route logging proves model identity per call. Pinned cells cannot silently fall back.</li>
+<li>Only primes (348,513 below 5,000,000) and fibmod (fib(10) = 55) state a correct answer in the NEED. The other 6 tasks rely on the cell's own correctness check inside its assay. This is a known weakness: a cell could reward a fast wrong answer it fails to detect. Adversary cells (R6) and harness-held reference outputs are the planned fix.</li>
+</ul>
+
+<h2 id="vars">4. Variables</h2>
+<h3>4.1 Independent variables (manipulated)</h3>
+<div class="tablewrap"><table>
+<tr><th>Variable</th><th>Levels so far</th><th>Planned levels</th></tr>
+<tr><td>Brain model</td><td>DeepSeek v4.1 Flash, Fable 5.1, GPT-6 Astra, hy4, Gemini 4 Argon</td><td>Haiku 5.5, Sonnet 5.5, Opus 5.5, GLM 5.3 Flash, Kimi K3</td></tr>
+<tr><td>Harness version</td><td>v1, v2, v3, v3 + nudges, v3b to v3d</td><td>Frozen per experiment from now on</td></tr>
+<tr><td>Action protocol</td><td>Native tools; text JSON (gpt-6)</td><td>Responses API native tools for gpt-6 (needs a harness fix)</td></tr>
+<tr><td>Colony size</td><td>8, 16</td><td>Many colonies in parallel (RQ8)</td></tr>
+<tr><td>Prompt nudges</td><td>none; early-assay nudge</td><td>Explicit "use variants" (H1)</td></tr>
+<tr><td>Colony composition</td><td>Homogeneous</td><td>Mixed models; mixed roles within a cell</td></tr>
+<tr><td>Mitosis design</td><td>Symmetric divide; asymmetric try; variants; autopsy lessons</td><td>Novelty floor, retrieved loser lessons, surrogate pre-filter, embedding steering</td></tr>
+<tr><td>NEED type</td><td>Speed and ratio coding tasks</td><td>Lean theorems; adversarial inputs</td></tr>
+<tr><td>Embedder (analysis)</td><td>nomic-embed-text, text-embedding-3-small, -3-large</td><td>Unchanged</td></tr>
+</table></div>
+<h3>4.2 Dependent variables (measured)</h3>
+<div class="tablewrap"><table>
+<tr><th>Variable</th><th>Definition</th><th>Source</th></tr>
+<tr><td><b>Kept improvements per 100 calls</b> (primary)</td><td>100 &times; (count of <code>improve</code> events) / (model calls)</td><td>log.jsonl, .calls</td></tr>
+<tr><td>Gain per cell</td><td>&prod;(1 + gain<sub>i</sub>) &minus; 1 over adopted wins, where gain = (median<sub>new</sub> &minus; median<sub>old</sub>) / median<sub>old</sub></td><td>colony.py</td></tr>
+<tr><td>Completion</td><td>Cells that wrote RESULT via <code>done</code></td><td>summary.json</td></tr>
+<tr><td>Apoptosis</td><td>Cells ended by 3 consecutive failures</td><td>log.jsonl</td></tr>
+<tr><td>Errors / bad replies</td><td>Exceptions; replies with no valid action</td><td>log.jsonl</td></tr>
+<tr><td>Action mix</td><td>Share of actions per type (sh, write, assay, variants, try, remember, done)</td><td>log.jsonl</td></tr>
+<tr><td>Variants written</td><td>Count of archived code versions</td><td>variants.jsonl</td></tr>
+<tr><td>Wall time</td><td>Run start to last cell exit</td><td>summary.json</td></tr>
+<tr><td>Resources</td><td>Peak RSS; peak and mean CPU of all cell trees</td><td>2 s sampler</td></tr>
+<tr><td>LIBRARY growth</td><td>Lines in LIBRARY.md at end of run</td><td>file</td></tr>
+<tr><td>Embedding metrics</td><td>Split width (mean pairwise cosine distance in a batch); centroid gap between groups; permutation p</td><td>embed.py, perm.py</td></tr>
+<tr><td>Cost</td><td>USD per run and per kept improvement</td><td><b>Not yet logged</b> (planned)</td></tr>
+</table></div>
+<h3>4.3 Controlled variables (held constant)</h3>
+<div class="tablewrap"><table>
+<tr><th>Constant</th><th>Value</th></tr>
+<tr><td>Task set</td><td>needs8v3.json, 8 tasks (Appendix C)</td></tr>
+<tr><td>Per-cell call cap / step cap / parallel cells</td><td>40 / 16 / 8</td></tr>
+<tr><td>Assay repeats / acceptance spread</td><td>5 / 15%</td></tr>
+<tr><td>Win margin</td><td>max(3%, measured noise); worst challenger run &ge; incumbent median</td></tr>
+<tr><td>Max variants per batch / mitosis depth</td><td>6 / 1</td></tr>
+<tr><td>Genome cap / tool output cap / shell timeout</td><td>4,000 chars / 2,000 chars / 30 s</td></tr>
+<tr><td>Apoptosis threshold / backoff cap</td><td>3 consecutive failures / 6 waits</td></tr>
+<tr><td>LIBRARY line cap</td><td>400 chars, no code</td></tr>
+<tr><td>System prompt and tool descriptions</td><td>Appendix A and B, verbatim</td></tr>
+<tr><td>Runtime</td><td>Cells: /opt/homebrew/bin/python3 in sandbox. Runner: exo-live venv Python. Exo commit 6054da56</td></tr>
+<tr><td>Hardware</td><td>One M1 Max, 8P+2E cores, 64 GB</td></tr>
+</table></div>
+<h3>4.4 Uncontrolled and confounding variables</h3>
+<div class="tablewrap"><table>
+<tr><th>Variable</th><th>Effect</th><th>Mitigation</th></tr>
+<tr><td>Provider latency and rate limits</td><td>Inflate wall time; caused 5 deaths in b6</td><td>Primary metric is per call, not per second; backoff; record 429 counts</td></tr>
+<tr><td>Sampling temperature and reasoning effort</td><td>Not set; provider defaults apply and may differ by model</td><td>Record defaults; plan a temperature sweep for one model</td></tr>
+<tr><td>Model nondeterminism</td><td>Same model, very different runs (Fable 7.76 to 12.82)</td><td>3 or more replicate runs</td></tr>
+<tr><td>Cell-written assay workload</td><td>Each cell picks its own input size, so gains are not on a common scale across runs</td><td>Planned: harness-fixed reference workloads per need</td></tr>
+<tr><td>Other machine load</td><td>Other agent CLIs and the desktop app share the CPU</td><td>Bench lock; 5-run medians; record load average (planned)</td></tr>
+<tr><td>Time of day and run order</td><td>Provider load drifts</td><td>Interleave conditions</td></tr>
+<tr><td>LIBRARY state inside a run</td><td>Early wins shape later cells</td><td>Treated as part of the system; tested directly in D1 and E4</td></tr>
+<tr><td>Model-specific action protocol</td><td>gpt-6 runs in text mode, others use native tools</td><td>Fix the transport, then rerun Astra</td></tr>
+</table></div>
+
+<h2 id="analysis">5. Analysis plan and decision rules</h2>
+<ul>
+<li><b>Primary comparison</b>: kept improvements per 100 calls, one value per run. Two conditions: Welch t-test and Mann-Whitney U, two-sided, &alpha; = 0.05. More than two conditions: Kruskal-Wallis, then pairwise tests with Holm correction.</li>
+<li><b>Effect size</b>: report the difference in means with a bootstrap 95% CI (10,000 resamples of runs) and Cohen's d. A difference under 2 per 100 calls is treated as practically equal.</li>
+<li><b>Replication</b>: at least 3 runs per condition before any ranking. 5 runs for headline claims. Our observed SD (1.5 to 2.6) means n = 5 per arm detects a gap of about 3.5 per 100 at 80% power.</li>
+<li><b>Embeddings</b>: permutation tests shuffle <i>whole runs</i> between labels, not single variants, because variants share lineage. A model-label effect counts only if the cross-model gap exceeds the same-model gap.</li>
+<li><b>Correlations</b>: report r with n and a note when the measures are linked by construction (variants and improvements).</li>
+<li><b>Scaling gate</b>: add cells or colonies only when the rate rises in two runs in a row. Scale for throughput is allowed when the rate per 100 calls holds steady.</li>
+<li><b>Stopping</b>: a condition stops early if 2 runs in a row produce 0 kept improvements and a log check shows no harness fault.</li>
+<li><b>Exclusions</b>: a run is excluded only for a verified harness fault (example: b6-failed-400, where every call returned HTTP 400). Exclusions and their reasons are kept in TESTS.md, and the data is kept.</li>
+</ul>
+
+<h2 id="results">6. Results to date (exploratory phase)</h2>
+<h3>6.1 Feasibility (pilots)</h3>
+<p>c1 (word frequency) built a working, tested tool in 10 calls and 50.7 s. c2 (primes) ran the first mitosis:
+daughter A (odd-only half sieve) scored 34.6 and daughter B (full bytearray sieve) 27.9 on 1/s. The winner
+re-verified at about 30 ms for N = 5,000,000 with the correct count, in 50 calls and 474 s. <b>RQ1: yes.</b></p>
+
+<h3>6.2 Harness design (g1 to g4)</h3>
+<div class="tablewrap"><table>
+<tr><th>Run</th><th>Cells</th><th>Done</th><th>Calls</th><th>Kept</th><th>Per 100</th><th>Wall s</th><th>Peak RSS MB</th></tr>
+<tr><td>g1 (v1)</td><td>8</td><td>5/8</td><td>112</td><td>n/a</td><td>n/a</td><td>273</td><td>789</td></tr>
+<tr><td>g2 (v2)</td><td>16</td><td>14/16</td><td>265</td><td>n/a</td><td>n/a</td><td>498</td><td>1,441</td></tr>
+<tr><td>g3 (v3)</td><td>8</td><td>8/8</td><td>128</td><td>4</td><td>3.12</td><td>1,033</td><td>1,127</td></tr>
+<tr><td>g4 (v3+nudge)</td><td>8</td><td>7/8</td><td>127</td><td>2</td><td>1.57</td><td>994</td><td>1,040</td></tr>
+</table></div>
+<p class="cap">v1 and v2 did not log kept-improvement events, so no rate is available for them.</p>
+<ul>
+<li><b>Membrane failure (g2)</b>: 46 replies were lost (22 written as tool markup in text, 24 empty). After v3, malformed replies ran at 0 or 1 per run.</li>
+<li><b>Untrusted fitness (g2)</b>: a split was decided with both daughters scoring 0. The validated assay now blocks this.</li>
+<li><b>Symmetric mitosis cost (g2)</b>: split twins used 14 to 24 calls against 14 for plain cells, and 2 split cells did not finish.</li>
+<li><b>Scaling gate failed (g3 to g4)</b>: the rate fell from 3.12 to 1.57, so colonies stayed at 8 cells.</li>
+</ul>
+
+<h3>6.3 Model comparison</h3>
+<div class="tablewrap"><table>
+<tr><th>Run</th><th>Model</th><th>Done</th><th>Calls</th><th>Kept</th><th>Per 100</th><th>Wall s</th><th>Apoptosis</th><th>Peak RSS MB</th></tr>
+<tr><td>g3</td><td>DeepSeek v4.1 Flash</td><td>8/8</td><td>128</td><td>4</td><td>3.12</td><td>1,033</td><td>0</td><td>1,127</td></tr>
+<tr><td>g4</td><td>DeepSeek v4.1 Flash</td><td>7/8</td><td>127</td><td>2</td><td>1.57</td><td>994</td><td>0</td><td>1,040</td></tr>
+<tr><td>b5</td><td>Fable 5.1</td><td>8/8</td><td>117</td><td>15</td><td>12.82</td><td>360</td><td>0</td><td>1,149</td></tr>
+<tr><td>b9</td><td>Fable 5.1</td><td>8/8</td><td>116</td><td>9</td><td>7.76</td><td>1,069</td><td>0</td><td>1,050</td></tr>
+<tr><td>b11</td><td>Fable 5.1</td><td>8/8</td><td>118</td><td>13</td><td>11.02</td><td>597</td><td>0</td><td>1,379</td></tr>
+<tr><td>b6</td><td>GPT-6 Astra (text mode)</td><td>3/8</td><td>132</td><td>17</td><td>12.88</td><td>555</td><td>5</td><td>913</td></tr>
+<tr><td>b7</td><td>hy4</td><td>7/8</td><td>123</td><td>0</td><td>0.00</td><td>3,227</td><td>1</td><td>872</td></tr>
+<tr><td>b8</td><td>Gemini 4 Argon</td><td>7/8</td><td>116</td><td>12</td><td>10.34</td><td>529</td><td>1</td><td>842</td></tr>
+<tr><td>b10</td><td>Gemini 4 Argon</td><td>8/8</td><td>120</td><td>15</td><td>12.50</td><td>694</td><td>0</td><td>882</td></tr>
+</table></div>
+<div class="box">Fable: mean 10.53, SD 2.56 (n=3). Argon: mean 11.42, SD 1.53 (n=2). Welch t = 0.48, <b>no detectable difference</b>.
+Frontier as a group (8 to 13) is well above Flash (1.6 to 3.1). Astra's 5 deaths came from HTTP 429 rate limits, not from the model.</div>
+
+<h3>6.4 Protocol adherence</h3>
+<div class="tablewrap"><table>
+<tr><th>Run</th><th>Model</th><th>Actions</th><th>sh %</th><th>variants %</th><th>try</th><th>remember</th><th>Per 100</th></tr>
+<tr><td>g3</td><td>Flash</td><td>128</td><td>70</td><td>3</td><td>0</td><td>0</td><td>3.12</td></tr>
+<tr><td>g4</td><td>Flash</td><td>127</td><td>72</td><td>2</td><td>0</td><td>0</td><td>1.57</td></tr>
+<tr><td>b7</td><td>hy4</td><td>99</td><td>78</td><td>0</td><td>0</td><td>0</td><td>0.00</td></tr>
+<tr><td>b8</td><td>Argon</td><td>85</td><td>47</td><td>19</td><td>0</td><td>0</td><td>10.34</td></tr>
+<tr><td>b9</td><td>Fable</td><td>116</td><td>40</td><td>15</td><td>0</td><td>5</td><td>7.76</td></tr>
+<tr><td>b10</td><td>Argon</td><td>96</td><td>43</td><td>23</td><td>0</td><td>0</td><td>12.50</td></tr>
+<tr><td>b11</td><td>Fable</td><td>118</td><td>47</td><td>18</td><td>0</td><td>8</td><td>11.02</td></tr>
+<tr><td>b5</td><td>Fable</td><td>117</td><td>41</td><td>25</td><td>0</td><td>8</td><td>12.82</td></tr>
+<tr><td>b6</td><td>Astra</td><td colspan="4">different log format; 8 <code>try</code> events counted directly</td><td>n/a</td><td>12.88</td></tr>
+</table></div>
+<ul>
+<li>The <code>variants</code> share correlates with the rate at <b>r = 0.991</b> (n = 8 runs; 0.938 for frontier runs only). The two are partly linked by construction, since most kept wins come through <code>variants</code>.</li>
+<li><b>Only Astra used mitosis (<code>try</code>).</b> 8 tries, 2 won: a reversible word-token transform for compress (+37%) and a native C fast path for csvsum (+826%). The 6 losers each wrote an autopsy lesson to LIBRARY. No other model ever called <code>try</code>. So loser-informed mitosis exists in the code but has barely been exercised.</li>
+<li><b>Only Fable used <code>remember</code></b> (its genome), without being prompted.</li>
+<li><b>hy4 case</b>: 0 variants and 0 kept, but it benchmarked 12 encoders inside one shell script and reached a 14.3x compression ratio by hand. It optimized outside the measured channel.</li>
+</ul>
+
+<h3>6.5 Task structure</h3>
+<ul>
+<li><b>fibmod</b> gave the largest compounded gain in 5 of 7 frontier runs: Argon 251.9x and 47.0x, Fable 43.4x and 42.9x, Astra 27.9x. The exceptions were Fable b9 (1.24x) and hy4 (no variants). The task has an algorithmic jump (naive to fast doubling), and selection finds it.</li>
+<li><b>compress</b> was flat in 5 of the 6 frontier runs that finished it (the exception was Argon b8 at 1.35x). The first stdlib choice is already near the ceiling.</li>
+<li><b>csvsum deaths depend on the model</b> (hy4 and Argon b8 died, Fable never did). Our first reading, that the task was badly written, was wrong.</li>
+</ul>
+
+<h3>6.6 Embeddings</h3>
+<p><b>Embedder A/B (synthetic set):</b> all three embedders gave the same ordering. Spreads: nomic 0.20, 3-small 0.38, 3-large 0.31 to 0.35.</p>
+<p><b>E1 split width vs gain (b8, 5 batches):</b> the only adopted batch (maze, +10.5) was the widest. With n = 1 adoption, we make no claim.</p>
+<div class="tablewrap"><table>
+<tr><th>E5 permutation (3-small, 2,000 shuffles over variants)</th><th>Needs with p &lt; 0.05</th></tr>
+<tr><td>Argon (b8+b10) vs Fable (b9+b11)</td><td>7/8 (compress p = 0.23; 3-large p = 0.12)</td></tr>
+<tr><td>Control: Argon b8 vs b10</td><td>1/5</td></tr>
+<tr><td>Control: Fable b9 vs b11</td><td>6/8</td></tr>
+<tr><td>Argon b8 vs Fable b9 / Argon b10 vs Fable b11</td><td>4/6 / 4/7</td></tr>
+</table></div>
+<p>The same-model control breaks the fingerprint reading. Two Fable runs differ about as often as Fable and Argon do.
+What survives: <b>Argon converges on similar code from run to run, while Fable's code varies widely</b>, and that extra variety does not show up as a higher rate.</p>
+
+<h3>6.7 Resources</h3>
+<p>8-cell colonies peaked at 0.84 to 1.38 GB RSS. Peak CPU was 1.1 to 3.2 cores, and mean CPU was 7 to 72% of one core. Cells are I/O bound (they wait on the model).
+The serialized bench is the only real CPU consumer. A 64 GB M1 has headroom for many more colonies.</p>
+
+<h2 id="disc">7. Discussion</h2>
+<ol>
+<li><b>Improvement rate behaves like capability &times; protocol adherence &times; harness quality.</b> Each factor alone changed outcomes by large amounts, and adherence can zero out capability (hy4).</li>
+<li><b>"The model is key" holds between tiers but not within the frontier.</b> At the frontier, run-to-run variance dominates.</li>
+<li><b>The selection layer is the instrument.</b> It blocks fake wins, but it also cannot see gains made outside it. That trade-off is the reason for the adherence research thread.</li>
+<li><b>The mitosis action is under-used.</b> Models prefer cheap <code>variants</code> to an expensive daughter cell. Loser-informed mitosis can only be studied once cells actually divide, by prompting it or by making the harness divide on schedule.</li>
+<li><b>Embeddings need lineage-aware statistics.</b> Naive tests produce false fingerprints.</li>
+</ol>
+
+<h2 id="threats">8. Threats to validity</h2>
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Threat</th><th>Planned response</th></tr>
+<tr><td>Statistical</td><td>n = 1 to 3 runs per model</td><td>5 runs for headline claims (section 5)</td></tr>
+<tr><td>Internal</td><td>Harness changed between exploratory runs; backoff added after b6</td><td>Freeze per experiment; tag versions</td></tr>
+<tr><td>Internal</td><td>Provider throughput (Astra 429s, hy4 latency) mixed into "model"</td><td>Log 429s and latency; rerun Astra after the transport fix</td></tr>
+<tr><td>Internal</td><td>Astra used a different action protocol (text mode)</td><td>Add Responses API transport</td></tr>
+<tr><td>Construct</td><td>Kept improvements largely require <code>variants</code></td><td>Also report gain and done rate; H1 tests adherence directly</td></tr>
+<tr><td>Construct</td><td>6 of 8 tasks have no harness-held correct answer</td><td>Reference outputs held by the harness; R6 adversary cells</td></tr>
+<tr><td>Construct</td><td>Self-written assays mean no common benchmark</td><td>Harness-fixed reference workloads</td></tr>
+<tr><td>Measurement</td><td>Shared machine, timing noise</td><td>Bench lock, medians, P-core pinning test (H17)</td></tr>
+<tr><td>External</td><td>8 short coding tasks, one machine, one harness family</td><td>Lean needs, adversary cells, larger tasks later</td></tr>
+<tr><td>Economic</td><td>Cost not logged</td><td>Add per-call cost from the router to log.jsonl</td></tr>
+<tr><td>Investigator</td><td>The same agent built the system, ran it and wrote this report</td><td>Hypotheses registered first; raw data kept for independent re-analysis</td></tr>
+</table></div>
+
+<h2 id="hyp">9. Hypothesis register</h2>
+<h3>9.1 Hypotheses already tested (exploratory)</h3>
+<div class="tablewrap"><table>
+<tr><th>#</th><th>Hypothesis</th><th>Source</th><th>Outcome</th></tr>
+<tr><td>T1</td><td>The model is the key variable</td><td>Project lead, after b5</td><td class="mix">Partly supported: holds between tiers, not within the frontier; adherence is a mediator</td></tr>
+<tr><td>T2</td><td>More cells per colony means more wins</td><td>Initial scaling plan</td><td class="ref">Not supported (gate failed g3 to g4)</td></tr>
+<tr><td>T3</td><td>Nudging an early assay raises the rate</td><td>agent, after g3</td><td class="ref">Not supported (3.12 to 1.57, within noise)</td></tr>
+<tr><td>T4</td><td>Native tool calls fix lost replies</td><td>agent, after g2</td><td class="sup">Supported (46 lost to 0 or 1 per run)</td></tr>
+<tr><td>T5</td><td>csvsum is a broken task</td><td>agent, after b8</td><td class="ref">Refuted (Fable never lost it)</td></tr>
+<tr><td>T6</td><td>Each model leaves a code fingerprint</td><td>E5</td><td class="ref">Not supported after same-model control</td></tr>
+<tr><td>T7</td><td>Wider splits find bigger wins</td><td>E1</td><td class="open">Undetermined (1 adoption)</td></tr>
+<tr><td>T8</td><td>Use of the selection tool drives the rate</td><td>agent, post hoc</td><td class="mix">Strong correlation (r = 0.99); causal test is H1</td></tr>
+</table></div>
+
+<h3>9.2 Registered hypotheses (predictions written before testing)</h3>
+<p>Each one gives a prediction, what would falsify it, and how confident we are now (a subjective prior). Results will be filled into this table without editing the predictions.</p>
+<div class="tablewrap"><table>
+<tr><th>#</th><th>Area</th><th>Prediction</th><th>Falsified if</th><th>Prior</th></tr>
+<tr><td>H1</td><td>Adherence</td><td>hy4, told explicitly to register an assay and use <code>variants</code>, reaches at least 5 kept per 100 calls</td><td>Below 2 per 100 over 2 runs</td><td>0.65</td></tr>
+<tr><td>H2</td><td>Frontier</td><td>With 5 runs each, Fable and Argon differ by less than 2 per 100, and the difference is not significant</td><td>Significant gap of 3 or more</td><td>0.70</td></tr>
+<tr><td>H3</td><td>Gradient</td><td>Rate rises with tier: Flash &lt; Haiku &lt; Sonnet &le; Opus &asymp; Fable. Sonnet reaches at least 70% of Fable's rate</td><td>Sonnet below 50% of Fable, or Haiku below Flash</td><td>0.55</td></tr>
+<tr><td>H4</td><td>Economics</td><td>Once cost is logged, the best cost per kept improvement is a mid-tier model, not the top one</td><td>The top-tier model is cheapest per kept improvement</td><td>0.60</td></tr>
+<tr><td>H5</td><td>Mixed colonies</td><td>4 fast + 4 frontier cells sharing a LIBRARY: the fast cells gain less than 1 per 100 over fast-only colonies, because lessons carry no code</td><td>Fast cells gain 3 or more per 100</td><td>0.60</td></tr>
+<tr><td>H6</td><td>Mixed roles</td><td>Escalating from fast to strong after 3 steps without a win matches strong-only rate within 2 per 100, at half the strong calls or fewer</td><td>Rate more than 4 per 100 below strong-only</td><td>0.45</td></tr>
+<tr><td>H7</td><td>Mitosis use</td><td>If the harness forces one <code>try</code> per cell, frontier models win at least 25% of tries (Astra: 2/8)</td><td>Win rate below 10% over 30 or more tries</td><td>0.55</td></tr>
+<tr><td>H8</td><td>Loser-informed mitosis</td><td>Tries made after a LOSS lesson in the same need win more often than first tries</td><td>Equal or lower win rate over 30 or more tries</td><td>0.50</td></tr>
+<tr><td>H9</td><td>Novelty floor</td><td>Rejecting variant batches whose members sit closer than a set cosine distance raises the rate by 10 to 20%</td><td>No change or a drop</td><td>0.40</td></tr>
+<tr><td>H10</td><td>Surrogate fitness</td><td>A kNN surrogate predicts within-need rank with Spearman &rho; above 0.5, saves at least 30% of bench time and loses at most 10% of wins</td><td>&rho; below 0.3, or win loss above 20%</td><td>0.45</td></tr>
+<tr><td>H11</td><td>Causal steering</td><td>Picking the candidate with the highest projection on the winner-minus-loser direction beats a random pick, but the effect is not significant within 10 runs</td><td>Projection pick does worse than random</td><td>0.50</td></tr>
+<tr><td>H12</td><td>Retrieved lessons</td><td>Giving each cell its top-k nearest LIBRARY lines beats giving all lines once LIBRARY passes about 40 lines</td><td>No difference at 40 or more lines</td><td>0.45</td></tr>
+<tr><td>H13</td><td>Lean needs</td><td>Frontier models prove at least 50% of easy theorems without <code>sorry</code>, fast models less than 20%. Fake wins are 0 by construction</td><td>Frontier below 25%</td><td>0.55</td></tr>
+<tr><td>H14</td><td>Meta-cells</td><td>First-generation meta-cells that edit <code>cell.py</code> mostly make it worse. Any real gains come from prompt edits, not selection logic</td><td>A meta-cell improves selection logic with a measured child-colony gain</td><td>0.70</td></tr>
+<tr><td>H15</td><td>Tool commons</td><td>With a shared tool shelf, a few tools (benchmark and test helpers) spread to most cells, and the rate rises by 2 or more per 100</td><td>No tool reused by more than 2 cells</td><td>0.45</td></tr>
+<tr><td>H16</td><td>Adversary cells</td><td>Attacker cells find a correctness bug in at least 1 adopted winner per 8-need run</td><td>No bugs found across 3 runs</td><td>0.50</td></tr>
+<tr><td>H17</td><td>Apple Silicon</td><td>Pinning assays to P-cores cuts assay spread by at least 30%. Running assays on E-cores or in parallel without the lock pushes noise above the 3% margin and lowers adopted wins</td><td>No change in spread</td><td>0.60</td></tr>
+<tr><td>H18</td><td>Scale and emergence</td><td>Running many colonies in parallel leaves the rate per 100 calls flat. With a shared LIBRARY across colonies, winners converge (monoculture: lower code variety per need over time)</td><td>Rate changes by more than 3 per 100, or variety rises</td><td>0.50</td></tr>
+</table></div>
+
+<h2 id="road">10. Areas of exploration and experiment roadmap</h2>
+<h3>10.1 Map of areas</h3>
+<div class="tablewrap"><table>
+<tr><th>Area</th><th>Question</th><th>Experiments</th><th>Origin</th></tr>
+<tr><td>A. Model gradient</td><td>Rate, speed and cost along the tier ladder; Pareto frontier</td><td>B1 to B7, C1, C2, H2 to H4</td><td>Project lead</td></tr>
+<tr><td>B. Mixtures</td><td>Mixed colonies; mixed roles inside one cell</td><td>D1, D2, E1, E2, H5, H6</td><td>Project lead</td></tr>
+<tr><td>C. Adherence</td><td>Why do some models skip the selection tools?</td><td>H1, prompt variants, harness-forced actions</td><td>agent, from b7</td></tr>
+<tr><td>D. Mitosis design</td><td>Make each split build on the last: loser-informed splits, forced splits, novelty floor, split width</td><td>H7, H8, H9, E1, E2</td><td>Project lead (loser files inform the next split)</td></tr>
+<tr><td>E. Embedding space</td><td>Prediction, retrieval, convergence maps</td><td>E3 (H10), E4 (H12), E5, E6</td><td>Project lead, shaped by the agent</td></tr>
+<tr><td>F. Causality</td><td>Does a direction in embedding space cause wins?</td><td>F1 (H11), F2, F3</td><td>Project lead ("embedding to vector to causality")</td></tr>
+<tr><td>G. Agency</td><td>Cells build shared tools; cells evolve the mitosis process</td><td>R5 (H15), R4 (H14), A1, A2</td><td>Project lead</td></tr>
+<tr><td>H. Formal grounding</td><td>Proof-carrying wins; theorems as needs; proven selection rule; Bend</td><td>R1, R2 (H13), R3, R7, A3, A4</td><td>Project lead and agent</td></tr>
+<tr><td>I. Robustness</td><td>Adversarial inputs as the source of tests</td><td>R6 (H16)</td><td>agent</td></tr>
+<tr><td>J. Substrate and scale</td><td>Many colonies; emergent patterns; P/E cores, unified memory, GPU/ANE</td><td>H17, H18</td><td>Project lead</td></tr>
+</table></div>
+
+<h3>10.2 Planned experiments in detail</h3>
+<div class="tablewrap"><table>
+<tr><th>ID</th><th>Design</th><th>Runs</th></tr>
+<tr><td>B1 to B7</td><td>Homogeneous colonies on Flash, Haiku 5.5, Sonnet 5.5, Opus 5.5, Fable, Astra (after the transport fix), plus GLM 5.3 Flash and Kimi K3 as off-frontier controls</td><td>3 each</td></tr>
+<tr><td>C1</td><td>Plot all B conditions on calls, wall time and cost against rate. Mark the Pareto frontier</td><td>Analysis</td></tr>
+<tr><td>C2</td><td>The same conditions capped by wall time instead of calls (slow models lose on time)</td><td>2 each</td></tr>
+<tr><td>D1</td><td>4 fast + 4 frontier cells, shared LIBRARY. Compare fast cells with fast-only colonies</td><td>3</td></tr>
+<tr><td>D2</td><td>Each need run twice in one colony, once fast and once strong: head to head per task</td><td>3</td></tr>
+<tr><td>E1 (roles)</td><td>A strong model plans and picks variants, a fast model writes code</td><td>3</td></tr>
+<tr><td>E2 (roles)</td><td>Fast by default, escalate to strong after 3 steps without a win</td><td>3</td></tr>
+<tr><td>H1</td><td>hy4 with an explicit protocol instruction</td><td>2</td></tr>
+<tr><td>M1</td><td>Forced mitosis: the harness triggers one <code>try</code> per cell at mid-run. Loser autopsy and loser code (archived in variants.jsonl) are handed to the next split</td><td>3 per model</td></tr>
+<tr><td>M2</td><td>Novelty floor on variant batches (embedding distance threshold)</td><td>3 vs 3</td></tr>
+<tr><td>E3</td><td>kNN surrogate pre-filter in front of the bench, scored offline first on b8 to b11 archives</td><td>Offline, then 3</td></tr>
+<tr><td>E4</td><td>LIBRARY retrieval: none, all, top-k</td><td>3 each</td></tr>
+<tr><td>E6</td><td>Convergence map: do winners for one need collapse to one point or several basins?</td><td>Analysis on all runs</td></tr>
+<tr><td>F1, F2</td><td>Steering pick vs random pick; rewrite toward vs away from the nearest winner</td><td>5 vs 5</td></tr>
+<tr><td>F3</td><td>Lean theorem that every adoption in a log satisfied the win rule, checked over logged numbers</td><td>Proof</td></tr>
+<tr><td>R1</td><td>Proof-carrying wins: differential testing first, then a Lean equivalence proof</td><td>2 tiers</td></tr>
+<tr><td>R2</td><td>Lean needs: fitness = <code>lake build</code> passes with no <code>sorry</code>. Two tactics per split</td><td>3 per tier</td></tr>
+<tr><td>R4</td><td>Meta-cells whose body is <code>cell.py</code>, scored by a child colony's rate. The assay and sandbox stay outside its body</td><td>Pilot</td></tr>
+<tr><td>R5</td><td>Shared tool shelf; track which tools spread</td><td>3</td></tr>
+<tr><td>R6</td><td>Attacker sibling per need writes breaking inputs; the assay grows from its finds</td><td>3</td></tr>
+<tr><td>R7</td><td>Bend/HVM used to run assays in parallel (Bend is for parallel evaluation, not proofs)</td><td>Pilot</td></tr>
+<tr><td>S1</td><td>Assays pinned to P-cores vs E-cores via <code>taskpolicy</code>/QoS; measure assay spread</td><td>Microbenchmark</td></tr>
+<tr><td>S2</td><td>GPU or ANE embeddings inline (Metal / MLX), measuring latency per variant for E3</td><td>Microbenchmark</td></tr>
+<tr><td>S3</td><td>Scale: 2, 4, 8, 16 colonies at once; watch rate, bench queue, LIBRARY convergence</td><td>Once the rate gate allows</td></tr>
+</table></div>
+<h3>10.3 Order of work</h3>
+<ol>
+<li><b>Instrument first</b>: log cost per call, add harness-fixed reference workloads, add the Responses API transport for gpt-6, and tag a frozen harness version.</li>
+<li><b>Cheap, high-information</b>: H1 (hy4 adherence), E3 offline on existing archives, S1 microbenchmark.</li>
+<li><b>Model gradient</b>: B2 to B4 and B7, then reps of Fable and Argon to 5. C1 frontier plot.</li>
+<li><b>Mitosis design</b>: M1 forced and loser-informed mitosis, then M2.</li>
+<li><b>Mixtures</b>: D1, E2.</li>
+<li><b>Formal</b>: R2, then R1, then R3/F3.</li>
+<li><b>Agency</b>: R5, R6, then R4.</li>
+<li><b>Scale</b>: S3, only after the gate in section 5 allows it.</li>
+</ol>
+<p class="cap">Volume estimate: one run is about 120 model calls. The plan above is roughly 100 runs, or about 12,000 calls. Cost per call has not been measured yet, so no dollar estimate is given.</p>
+
+<h2 id="safety">11. Safety, ethics and governance</h2>
+<ul>
+<li>Cells hold no credentials and have no network access. All model traffic passes through the parent's router, which logs every call's route.</li>
+<li>Cells cannot read the user's home folder or write outside their own folder. This was verified with negative tests, not assumed.</li>
+<li>Meta-cells (R4) will never get the assay, the sandbox profile or the selection rule inside their editable body. Without that rule, a cell could improve its score by editing the judge.</li>
+<li>Human oversight: the project lead sets budget and direction. Outward actions (publishing, posting) need the project lead's approval.</li>
+<li>Embedding calls to OpenAI send cell-written code only. That code contains no personal data.</li>
+<li>Budget: the project lead granted an uncapped budget for this program, with model choice limited to configured or previously used models.</li>
+</ul>
+
+<h2 id="harness">12. Harness findings filed during the program</h2>
+<div class="tablewrap"><table>
+<tr><th>No.</th><th>Issue</th></tr>
+<tr><td>1</td><td>One model route needs a session header on every call, and had no fallback route</td></tr>
+<tr><td>2</td><td>gpt-6 on chat/completions rejects function tools combined with reasoning. Needs a /v1/responses transport</td></tr>
+<tr><td>3</td><td>The agent is not reliably woken when a background job exits; one early wake</td></tr>
+<tr><td>4</td><td>Phantom turns ran, and were billed, with no user input</td></tr>
+</table></div>
+
+<h2 id="repro">13. Reproducibility, data dictionary and timeline</h2>
+<h3>13.1 Files</h3>
+<ul>
+<li>Code and data: published as the E07 record in the Weft repository, under <code>docs/program/experiments/E07/razi-cells-2026-11/</code> (<code>code/</code>: <code>cell.py</code>, <code>colony.py</code>, <code>embed.py</code>, <code>perm.py</code>; <code>data/</code>: run summaries for g3, g4 and b5 to b11). <a href="https://github.com/Moissanite-Labs/weft/pull/101">Record, under review</a>.</li>
+<li>Logs: <code>exp/TESTS.md</code> (dated results), <code>exp/IDEAS.md</code> (idea log A, R, E, F), this report (<code>REPORT.html</code>; version 1 kept as <code>REPORT_v1.html</code>).</li>
+<li>Toolchain: Lean 4.35, Bend 0.2.38, HVM 2.0.22 (Bend smoke test returned 499,500 on both runtimes), Ollama with nomic-embed-text.</li>
+</ul>
+<h3>13.2 Data dictionary</h3>
+<div class="tablewrap"><table>
+<tr><th>Record</th><th>Fields</th></tr>
+<tr><td>log.jsonl step</td><td><code>step, act{do,...}, res, route</code>; or <code>bad_reply, bad_len</code>; or <code>error</code>; or <code>backoff, why</code></td></tr>
+<tr><td>log.jsonl event</td><td><code>assay, improve{gain,what}, variants{path,medians,best,adopted,gain}, try{idea,expect,runs,won,gain}, mitosis, apoptosis</code></td></tr>
+<tr><td>variants.jsonl</td><td>Full text of every write and variant, with kind and path</td></tr>
+<tr><td>summary.json (per cell)</td><td><code>steps, errors, acts, splits, ties, bad_replies, assays, variants, tries, improvements, gain, apoptosis, calls, routes, done</code></td></tr>
+<tr><td>summary.json (per run)</td><td>Cells plus wall time, peak RSS, peak and mean CPU</td></tr>
+<tr><td>vectors.&lt;model&gt;.json</td><td>Cached embedding per variant</td></tr>
+</table></div>
+<h3>13.3 Timeline</h3>
+<div class="tablewrap"><table>
+<tr><th>When</th><th>Event</th></tr>
+<tr><td>2026-11-08</td><td>Project lead grants agency over self-built tooling and proposes micro-harnesses with mitosis. Sandbox verified; c1 and c2 pilots</td></tr>
+<tr><td>2026-11-08/09</td><td>g1, g2 (v1, v2); v3 rebuilt; g3, g4; scaling gate fails</td></tr>
+<tr><td>2026-11-09</td><td>Project lead hands full agency and an uncapped budget; test plan written; b5 (Fable), b6 (Astra)</td></tr>
+<tr><td>2026-11-09</td><td>Ideas A1 to A4 and R1 to R7 logged; Bend and HVM installed; b7 (hy4), b8 (Argon)</td></tr>
+<tr><td>2026-11-09</td><td>Embedding program E1 to E6 and F1 to F3; embedder A/B; b9, b10, b11; permutation tests with controls</td></tr>
+<tr><td>2026-11-09</td><td>Report 1; hypotheses H1 to H18 registered</td></tr>
+</table></div>
+
+<h2 id="gloss">14. Glossary</h2>
+<div class="tablewrap"><table>
+<tr><td><b>Cell</b></td><td>One agent harness working on one NEED inside its own sandboxed folder</td></tr>
+<tr><td><b>Colony / run</b></td><td>A set of cells run together under one condition</td></tr>
+<tr><td><b>NEED</b></td><td>The read-only task statement that a cell must satisfy</td></tr>
+<tr><td><b>Genome</b></td><td>The cell's own memory file</td></tr>
+<tr><td><b>LIBRARY / germline</b></td><td>The shared file of wins and loss lessons that all cells in a colony read</td></tr>
+<tr><td><b>Assay</b></td><td>The cell's fitness command, validated by the harness</td></tr>
+<tr><td><b>Variants</b></td><td>Several full versions of one file, scored together</td></tr>
+<tr><td><b>Mitosis / try</b></td><td>A daughter cell explores one idea against the parent as control</td></tr>
+<tr><td><b>Autopsy</b></td><td>A one-line lesson written when a daughter loses</td></tr>
+<tr><td><b>Apoptosis</b></td><td>Cell death after 3 consecutive failures</td></tr>
+<tr><td><b>Membrane</b></td><td>The interface that turns a model reply into exactly one action</td></tr>
+<tr><td><b>Adherence</b></td><td>How much a model uses the measured channel (assay, variants, try) instead of acting outside it</td></tr>
+<tr><td><b>Split width</b></td><td>Mean cosine distance between code versions in one batch</td></tr>
+</table></div>
+
+<h2 id="appx">15. Appendices</h2>
+<h3>A. System prompt (verbatim)</h3>
+<pre>You are a cell: a tiny agent that starts with nothing but a NEED and an empty folder (your body).
+Grow only the tools your need demands, one step at a time. Call exactly one tool per reply.
+Path to fitness: 1) build a correct version and check it. 2) register an `assay`: a shell command that
+prints one number, higher is better, 0 if the output is wrong. Make its workload heavy enough (about
+0.3 to 3 s) that process startup does not dominate. 3) improve with `variants` (cheap: several versions
+of one file in one reply, all scored) or `try` (expensive: a daughter cell explores one bigger idea).
+Only scored wins are kept. Read LIBRARY: other cells' results and lessons, often useful to you.</pre>
+<h3>B. Tool specification (v3)</h3>
+<div class="tablewrap"><table>
+<tr><th>Tool</th><th>Description given to the model</th></tr>
+<tr><td>sh</td><td>Run a shell command in your folder. No network, 30 s limit, python3 available.</td></tr>
+<tr><td>write</td><td>Create or overwrite a file in your folder.</td></tr>
+<tr><td>remember</td><td>Replace genome.md, your memory across steps (max 4000 chars).</td></tr>
+<tr><td>assay</td><td>Register your fitness command. The harness runs it 5 times on your current body and accepts it only if it exits 0, prints a number &gt; 0, and is stable (spread under 15%).</td></tr>
+<tr><td>variants</td><td>Propose 2 to 6 full alternative versions of ONE file. Each is scored by your assay against the current body; the best is adopted only if it wins beyond noise.</td></tr>
+<tr><td>try</td><td>Spawn one daughter cell that explores one idea for half your remaining steps. Its body replaces yours only if it beats you on the assay beyond noise. State the gain you expect.</td></tr>
+<tr><td>done</td><td>Finish. One paragraph: what you built and the evidence it works.</td></tr>
+</table></div>
+<h3>C. Tasks (needs8v3.json)</h3>
+<div class="tablewrap"><table>
+<tr><th>Need</th><th>Task</th><th>Fitness</th></tr>
+<tr><td>primes</td><td>Count primes below N (348,513 below 5,000,000). Verify before done</td><td>1/s</td></tr>
+<tr><td>sortints</td><td>Sort 1,000,000 integers from stdin</td><td>1/s</td></tr>
+<tr><td>wordfreq</td><td>Top-10 words of 20 MB of text, ties by word</td><td>1/s</td></tr>
+<tr><td>compress</td><td>Stdlib-only round-trip compressor</td><td>Compression ratio</td></tr>
+<tr><td>fibmod</td><td>fib(n) mod 1e9+7 for n up to 10^18</td><td>1/s</td></tr>
+<tr><td>lcs</td><td>LCS length of two 3,000-char strings</td><td>1/s</td></tr>
+<tr><td>csvsum</td><td>Group sums over 2,000,000 CSV rows</td><td>1/s</td></tr>
+<tr><td>maze</td><td>Shortest path in a 2000x2000 grid</td><td>1/s</td></tr>
+</table></div>
+<p class="cap">Fitness is 0 when output is wrong. The assay command and workload are written by each cell and validated by the harness.</p>
+
+</main>
+<footer class="foot"><a class="name" href="../../">MOISSANITE LABS</a><span>&copy; 2026 Moissanite Labs</span><a href="https://github.com/Moissanite-Labs/.github">Site source <span aria-hidden="true">&nearr;</span></a></footer>
+</body>
+</html>
